@@ -13,7 +13,7 @@ def point_wise_feed_forward_network(d_model, dff, activation='relu'):
 class EncoderLayer(tf.keras.layers.Layer):
     def __init__(self, d_model, num_heads, dff, rate=0.1):
         super(EncoderLayer, self).__init__()
-
+        self.d_model = d_model
         self.mha = mha.MultiHeadAttention(d_model, num_heads)
         self.ffn = point_wise_feed_forward_network(d_model, dff)
         self.layernorm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
@@ -48,6 +48,7 @@ class EncoderPack(tf.keras.layers.Layer):
 
     def call(self, x, training, mask=None):
         x = self.embedding(x)
+        x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
         # print(tf.shape(x))
         x = x + self.pos_encoding[:, :tf.shape(x)[1], :]
         x = self.dropout(x, training=training)

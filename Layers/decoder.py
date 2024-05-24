@@ -7,6 +7,7 @@ import Layers.encoder as enc
 class DecoderLayer(tf.keras.layers.Layer):
     def __init__(self, d_model, num_heads, dff, rate=0.1):
         super(DecoderLayer, self).__init__()
+        self.d_model = d_model
         self.masked_mha = mha.MultiHeadAttention(d_model, num_heads)
         self.pad_mha = mha.MultiHeadAttention(d_model, num_heads)
         self.ffn = enc.point_wise_feed_forward_network(d_model, dff)
@@ -46,6 +47,7 @@ class DecoderPack(tf.keras.layers.Layer):
 
     def call(self, x, enc_output, training, look_ahead_mask, padding_mask):
         x = self.embedding(x)
+        x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
         x += self.pos_encoding[:, :tf.shape(x)[1], :]
         x = self.dropout(x, training=training)
         for _ in range(self.num_decoder_layers):
