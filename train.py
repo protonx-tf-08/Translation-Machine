@@ -22,6 +22,8 @@ if __name__ == '__main__':
     parser.add_argument("--path-train", required=True, type=str)
     parser.add_argument("--path-valid", required=True, type=str)
     parser.add_argument("--path-test", required=True, type=str)
+    parser.add_argument("--path-token-en", type=str)
+    parser.add_argument("--path-token-vi", type=str)
     parser.add_argument("--checkpoint-path",
                         default='model_checkpoint', type=str)
 
@@ -43,14 +45,17 @@ if __name__ == '__main__':
     # Load data
     print('=============Data Processing Progress================')
     print('----------------Begin--------------------')
+
     print('Loading data ......')
+
     dataset = data.Data_Preprocessing(
-        args.path_train, args.path_valid, args.path_test)
+        args.path_train, args.path_valid, args.path_test, type_data='arrow')
 
     print('Data processing ......')
-    train_dataset, val_dataset, test_dataset, input_tokenizer, target_tokenizer = dataset.data_process(max_input_length=args.max_length_input,
-                                                                                                       max_target_length=args.max_length_target,
-                                                                                                       batch_size=args.batch_size)
+    train_dataset, val_dataset, test_dataset, input_tokenizer, target_tokenizer = dataset.load_data_tokenizer(
+        tokenizer_en_path=args.path_token_en,
+        tokenizer_vi_path=args.path_token_vi,
+        batch_size=args.batch_size, shuffle=True)
 
     print('Suscessfully processed data !')
     print('----------------------------------------')

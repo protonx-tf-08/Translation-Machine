@@ -37,6 +37,7 @@ class DecoderLayer(tf.keras.layers.Layer):
 class DecoderPack(tf.keras.layers.Layer):
     def __init__(self, num_decoder_layers, d_model, num_heads, dff, target_vocab_size, maximum_position_encoding, rate=0.1):
         super(DecoderPack, self).__init__()
+        self.d_model = d_model
         self.num_decoder_layers = num_decoder_layers
         self.embedding = tf.keras.layers.Embedding(
             target_vocab_size, d_model, input_length=maximum_position_encoding)

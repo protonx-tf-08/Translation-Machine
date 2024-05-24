@@ -33,7 +33,8 @@ class Transformer(tf.keras.Model):
             target_vocab_size)
 
     def call(self, inputs, training=True):
-        inp, out = inputs
+        inp = inputs['input_en']
+        out = inputs['input_vi']
         encoder_padding_mask, decoder_look_ahead_mask, decoder_padding_mask = gm.generate_mask(
             inp, out)
         enc_output = self.encoder(
@@ -42,4 +43,3 @@ class Transformer(tf.keras.Model):
             out, enc_output, training=training, look_ahead_mask=decoder_look_ahead_mask, padding_mask=decoder_padding_mask)
         output = self.final_layer(dec_output)
         return output
-

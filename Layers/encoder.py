@@ -36,6 +36,7 @@ class EncoderPack(tf.keras.layers.Layer):
     def __init__(self, num_encoder_layers, d_model, num_heads, dff, input_vocab_size, maximum_position_encoding, rate=0.1):
         super(EncoderPack, self).__init__()
         # Lập trình tại đây
+        self.d_model = d_model
         self.num_encoder_layers = num_encoder_layers
         self.embedding = tf.keras.layers.Embedding(
             input_vocab_size, d_model, input_length=maximum_position_encoding)

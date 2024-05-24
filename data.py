@@ -1,16 +1,23 @@
 import tensorflow as tf
 import pandas as pd
-from datasets import load_dataset
+from datasets import Dataset, load_from_disk
 import underthesea
 import pickle
 import re
+import os
+import sys
 
 
 class Data_Preprocessing:
-    def __init__(self, train_path, val_path, test_path):
-        self.train_dataset = pd.read_csv(train_path, encoding='utf-8')
-        self.val_dataset = pd.read_csv(val_path, encoding='utf-8')
-        self.test_dataset = pd.read_csv(test_path, encoding='utf-8')
+    def __init__(self, train_path, val_path, test_path, type_data='csv'):
+        if (type_data == 'csv'):
+            self.train_dataset = pd.read_csv(train_path)
+            self.val_dataset = pd.read_csv(val_path)
+            self.test_dataset = pd.read_csv(test_path)
+        if (type_data == 'arrow'):
+            self.train_dataset = self.load_dataset(train_path)
+            self.val_dataset = self.load_dataset(val_path)
+            self.test_dataset = self.load_dataset(test_path)
 
     def tokenizer(self, dataset, language='en', tokenizer_en=None, tokenizer_vi=None):
         if language == "vi":
@@ -61,20 +68,37 @@ class Data_Preprocessing:
             target_tensor, max_length=max_target_length)
         return input_tensor, target_tensor, input_tokenizer, target_tokenizer
 
-    def convert_tfdataset(self, input_tensor, target_tensor, batch_size):
-        dataset = tf.data.Dataset.from_tensor_slices(
-            (input_tensor, target_tensor))
-        dataset = dataset.shuffle(10000).batch(
-            batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
-        return dataset
+    # def convert_tfdataset(self, input_tensor, target_tensor, batch_size):
+    #     dataset = tf.data.Dataset.from_tensor_slices(
+    #         (input_tensor, target_tensor))
+    #     dataset = dataset.shuffle(10000).batch(
+    #         batch_size).prefetch(buffer_size=tf.data.AUTOTUNE)
+    #     return dataset
 
-    def split_input_target(self, en, vi):
-        input_en = tf.convert_to_tensor(en, dtype=tf.int64)
-        input_vi = tf.convert_to_tensor(vi[:, :-1], dtype=tf.int64)
-        target_vi = tf.convert_to_tensor(vi[:, 1:], dtype=tf.int64)
-        return (input_en, input_vi), target_vi
+    def split_input_target(self, en, vi, path_save):
+        input_en = []
+        input_vi = []
+        target_vi = []
 
-    def data_process(self, max_input_length, max_target_length, batch_size=32):
+        # Tạo các danh sách riêng biệt cho từng cột
+        for f1, f2, label in zip(en, vi[:, :-1], vi[:, 1:]):
+            input_en.append(f1)
+            input_vi.append(f2)
+            target_vi.append(label)
+
+        # Tạo từ điển dữ liệu trực tiếp từ các danh sách đã tạo
+        reformatted_data_dict = {
+            'input_en': input_en,
+            'input_vi': input_vi,
+            'target_vi': target_vi
+        }
+
+        # Tạo Dataset từ từ điển
+        hf_dataset = Dataset.from_dict(reformatted_data_dict)
+        hf_dataset.save_to_disk(path_save)
+        return hf_dataset
+
+    def data_process(self, max_input_length, max_target_length, path_train, path_test, path_valid):
         train_dataset_inptensor, train_datasetout_tensor, input_tokenizer, target_tokenizer = self.preprocess(
             self.train_dataset, max_input_length, max_target_length)
         val_dataset_inptensor, val_datasetout_tensor, _, _ = self.preprocess(self.val_dataset,
@@ -82,28 +106,74 @@ class Data_Preprocessing:
         test_dataset_inptensor, test_datasetout_tensor, _, _ = self.preprocess(self.test_dataset,
                                                                                max_input_length, max_target_length, tokenizer_en=input_tokenizer, tokenizer_vi=target_tokenizer)
 
-        train_dataset_inptensor, train_datasetout_tensor = self.split_input_target(
-            train_dataset_inptensor, train_datasetout_tensor)
-        val_dataset_inptensor, val_datasetout_tensor = self.split_input_target(val_dataset_inptensor,
-                                                                               val_datasetout_tensor)
-        test_dataset_inptensor, test_datasetout_tensor = self.split_input_target(test_dataset_inptensor,
-                                                                                 test_datasetout_tensor)
+        train_dataset = self.split_input_target(
+            train_dataset_inptensor, train_datasetout_tensor, path_train)
+        val_dataset = self.split_input_target(
+            val_dataset_inptensor, val_datasetout_tensor, path_valid)
+        test_dataset = self.split_input_target(
+            test_dataset_inptensor, test_datasetout_tensor, path_test)
 
-        with open(r'Tokenizer\en_tokenizer.pkl', 'wb') as handle:
-            pickle.dump(input_tokenizer, handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+        with open(r'Tokenizer\en_tokenizer.json', 'w') as f:
+            f.write(input_tokenizer.to_json())
 
-        with open(r'Tokenizer\vi_tokenizer.pkl', 'wb') as handle:
-            pickle.dump(target_tokenizer, handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+        with open(r'Tokenizer\vi_tokenizer.json', 'w') as f:
+            f.write(target_tokenizer.to_json())
 
-        train_dataset = self.convert_tfdataset(
-            train_dataset_inptensor, train_datasetout_tensor, batch_size)
-        val_dataset = self.convert_tfdataset(val_dataset_inptensor,
-                                             val_datasetout_tensor, batch_size)
-        test_dataset = self.convert_tfdataset(test_dataset_inptensor,
-                                              test_datasetout_tensor, batch_size)
         return train_dataset, val_dataset, test_dataset, input_tokenizer, target_tokenizer
+
+    def load_dataset(self, path_load):
+        if not os.path.exists(path_load):
+            print(f"File {path_load} does not exist.")
+            sys.exit(1)  # Kết thúc chương trình với mã lỗi 1
+        else:
+            print(f"File {path_load} exists.")
+        return load_from_disk(path_load)
+
+    def load_tokenizer(self, tokenizer_en_path, tokenizer_vi_path):
+        if not os.path.exists(tokenizer_en_path):
+            print(f"File {tokenizer_en_path} does not exist.")
+            sys.exit(1)
+
+        if not os.path.exists(tokenizer_vi_path):
+            print(f"File {tokenizer_vi_path} does not exist.")
+            sys.exit(1)
+
+        with open(tokenizer_en_path) as f:
+            tokenizer_en = tf.keras.preprocessing.text.tokenizer_from_json(
+                f.read())
+
+        with open(tokenizer_vi_path) as f:
+            tokenizer_vi = tf.keras.preprocessing.text.tokenizer_from_json(
+                f.read())
+
+        return tokenizer_en, tokenizer_vi
+
+    def load_data_tokenizer(self, tokenizer_en_path, tokenizer_vi_path, batch_size=32, shuffle=True):
+        tokenizer_en, tokenizer_vi = self.load_tokenizer(
+            tokenizer_en_path, tokenizer_vi_path)
+        return self.convert_to_tf_dataset(self.train_dataset, batch_size, shuffle), self.convert_to_tf_dataset(self.val_dataset, batch_size, shuffle), self.convert_to_tf_dataset(self.test_dataset, batch_size, shuffle), tokenizer_en, tokenizer_vi
+
+    def convert_to_tf_dataset(self, hf_dataset, batch_size=32, shuffle=True):
+        def encode(examples):
+            return {
+                'input_en': tf.constant(examples['input_en']),
+                'input_vi': tf.constant(examples['input_vi']),
+                'target_vi': tf.constant(examples['target_vi'])
+            }
+
+        # Map the dataset to encode each example
+        tf_dataset = hf_dataset.map(encode)
+
+        # Convert to a tf.data.Dataset
+        tf_dataset = tf_dataset.to_tf_dataset(
+            columns=['input_en', 'input_vi'],
+            label_cols='target_vi',
+            shuffle=shuffle,
+            batch_size=batch_size,
+            collate_fn=None  # Use the default collate function
+        )
+
+        return tf_dataset
 
 
 class Data_Predict:
