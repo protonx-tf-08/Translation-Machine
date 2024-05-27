@@ -42,7 +42,8 @@ class EncoderPack(tf.keras.layers.Layer):
             input_vocab_size, d_model, input_length=maximum_position_encoding)
         self.pos_encoding = pe.positional_encoding(
             maximum_position_encoding, d_model)
-        self.enc_layers = EncoderLayer(d_model, num_heads, dff, rate)
+        # self.enc_layers = EncoderLayer(d_model, num_heads, dff, rate)
+        self.enc_layers = [EncoderLayer(d_model, num_heads, dff, rate) for _ in range(self.num_encoder_layers)]
         self.dropout = tf.keras.layers.Dropout(rate)
         self.global_average_pooling = tf.keras.layers.GlobalAveragePooling1D()
         self.final_layer = tf.keras.layers.Dense(1, activation="sigmoid")
@@ -53,9 +54,10 @@ class EncoderPack(tf.keras.layers.Layer):
         # print(tf.shape(x))
         x = x + self.pos_encoding[:, :tf.shape(x)[1], :]
         x = self.dropout(x, training=training)
-        for _ in range(self.num_encoder_layers):
-            x = self.enc_layers(x, training=training, mask=mask)
+        # for _ in range(self.num_encoder_layers):
+        #     x = self.enc_layers(x, training=training, mask=mask)
+        for enc_layer in self.enc_layers:
+            x = enc_layer(x, training=training, mask=mask)
 
         return x
-
 
