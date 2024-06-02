@@ -1,8 +1,10 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import model
 import tensorflow as tf
+import model
+
+
 
 def test_model():
     d_model = 512
@@ -13,12 +15,26 @@ def test_model():
     target_vocab_size = 8000
     pe_input = 10000
     pe_target = 6000
+
+    # Instantiate the Transformer model
     transformer = model.Transformer(num_layers, d_model, num_heads, dff,
-                              input_vocab_size, target_vocab_size, pe_input, pe_target)
-    result = transformer(inputs=(tf.random.uniform(
-        (64, 38)), tf.random.uniform((64, 37))))
+                                    input_vocab_size, target_vocab_size, pe_input, pe_target)
 
-    print(result.shape)
+    # Create input tensors
+    input_en = tf.random.uniform((64, 38))
+    input_de = tf.random.uniform((64, 37))
+
+    # Create a dictionary with the inputs
+    inputs = {
+        'input_en': input_en,
+        'input_vi': input_de,
+    }
+
+    # Pass the inputs dictionary to the transformer
+    result = transformer(inputs=inputs, training=True)
+
+    print(result)
 
 
-test_model()
+if __name__ == "__main__":
+    test_model()

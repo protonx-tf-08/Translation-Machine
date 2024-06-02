@@ -46,7 +46,6 @@ class EncoderPack(tf.keras.layers.Layer):
         self.enc_layers = [EncoderLayer(d_model, num_heads, dff, rate) for _ in range(self.num_encoder_layers)]
         self.dropout = tf.keras.layers.Dropout(rate)
         self.global_average_pooling = tf.keras.layers.GlobalAveragePooling1D()
-        self.final_layer = tf.keras.layers.Dense(1, activation="sigmoid")
 
     def call(self, x, training, mask=None):
         x = self.embedding(x)

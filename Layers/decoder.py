@@ -51,12 +51,9 @@ class DecoderPack(tf.keras.layers.Layer):
         x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
         x += self.pos_encoding[:, :tf.shape(x)[1], :]
         x = self.dropout(x, training=training)
-        # for _ in range(self.num_decoder_layers):
-        #     x = self.dec_layer(x, enc_output, training=training,
-        #                        padding_mask=padding_mask, look_ahead_mask=look_ahead_mask)
 
         for i, dec_layer in enumerate(self.dec_layers):
             x = dec_layer(x, enc_output, training=training, padding_mask=padding_mask, look_ahead_mask=look_ahead_mask)
-            print(f"After DecoderLayer {i+1}:", x.shape)
+            # print(f"After DecoderLayer {i+1}:", x.shape)
 
         return x
