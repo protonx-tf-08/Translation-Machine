@@ -28,24 +28,6 @@ if __name__ == '__main__':
     parser.add_argument("--model-path",
                         default='model.weights.h5', type=str)
 
-    # parser.add_argument("--max-length-input", default=64, type=int)
-    # parser.add_argument("--max-length-target", default=64, type=int)
-    # parser.add_argument("--num-heads-attention", default=1, type=int)
-    # parser.add_argument("--vocab-size", default=20000, type=int)
-    # parser.add_argument("--dff", default=2, type=int)
-    # parser.add_argument("--num-layers", default=1, type=int)
-    # parser.add_argument("--d-model", default=2, type=int)
-    # parser.add_argument("--batch-size", default=256, type=int)
-    # parser.add_argument("--epochs", default=10, type=int)
-    # parser.add_argument("--dropout-rate", default=0.1, type=float)
-    # parser.add_argument("--path-train", required=True, type=str)
-    # parser.add_argument("--path-valid", required=True, type=str)
-    # parser.add_argument("--path-test", required=True, type=str)
-    # parser.add_argument("--path-token-en", type=str)
-    # parser.add_argument("--path-token-vi", type=str)
-    # parser.add_argument("--model-path",
-    #                     default='model.weights.h5', type=str)
-
     home_dir = os.getcwd()
     args = parser.parse_args()
 

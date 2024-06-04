@@ -244,7 +244,7 @@ class Data_Predict:
         sentence = '{} {} {}'.format('<s>', sentence, '</s>')
         return sentence
 
-    def predict_data_preprocessing(self, max_length):
+    def get_input_data(self, max_length):
         lines_predict_preprocessed = [self.preprocess_sentence(
             sentence) for sentence in self.data]
 
