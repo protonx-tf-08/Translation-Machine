@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument("--path-test", required=True, type=str)
     parser.add_argument("--path-token-en", type=str)
     parser.add_argument("--path-token-vi", type=str)
-    parser.add_argument("--model-path",
+    parser.add_argument("--checkpoint-path",
                         default='model.weights.h5', type=str)
 
     home_dir = os.getcwd()

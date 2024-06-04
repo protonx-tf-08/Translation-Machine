@@ -42,13 +42,16 @@ pip install -r requirements.txt
 ``` 
 
 ## II.  Set up your dataset
-"
+
 This project utilized [mt_eng_vietnamese Dataset](https://huggingface.co/datasets/mt_eng_vietnamese/viewer/iwslt2015-en-vi/train?p=1)
 ```
 from datasets import load_dataset
 
 dataset = load_dataset('mt_eng_vietnamese', 'iwslt2015-en-vi')
 ```
+- We convert the loaded dataset to a pandas DataFrame for easier manipulation and save the DataFrame to a CSV file in folder `Data` and tokenizer saved in folder `Tokenizer`
+- We apply BPE (Byte Pair Encoding) tokenization to the dataset to handle rare words effectively. The processed dataset is then saved in the Arrow format for faster data loading
+
 
 ## III. Training Process
 
@@ -67,19 +70,46 @@ To configure the model, you can adjust the following parameters:
 - `batch-size`: Batch size for training. Default is 4.
 - `epochs`: Number of epochs for training. Default is 10.
 - `dropout-rate`: Dropout rate for regularization. Default is 0.1.
+- `path-token-en`: Path to English tokenizer.
+- `path-token-vi`: Path to Vietnam tokenizer.
 
 Make sure to specify the following paths: 
 - `path-train`: Path to the training dataset. This argument is required.
 - `path-valid`: Path to the validation dataset. This argument is required.
 - `path-test`: Path to the testing dataset. This argument is required.
-- `checkpoint-path`: Path to save model checkpoints. Default is 'model_checkpoint'.
+- `checkpoint-path`: Path to save model checkpoints. Default is 'model.weights.h5'.
 
 Training script:
 
 
-```python
+```bash
 
-python train.py --max-length-input ${max-length-input} --max-length-target ${max-length-target} --embedding-dim ${embedding-dim} --num-heads-attention ${num-heads-attention} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs}  --dropout-rate ${dropout-rate} --path-train ${path-train} --path-valid ${path-valid} --path-test ${path-test} --checkpoint-path ${checkpoint-path}
+python train.py --max-length-input ${max-length-input} --max-length-target ${max-length-target} --num-heads-attention ${num-heads-attention} --vocab-size ${vocab-size} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs} --dropout-rate ${dropout-rate} --path-train ${path-train} --path-valid ${path-valid} --path-test ${path-test} --path-token-en ${path-token-en} --path-token-vi ${path-token-vi} --checkpoint-path ${checkpoint-path}
+
+```
+
+Example: 
+```bash
+#!/bin/bash
+
+# Directly input numerical values
+python train.py \
+    --max-length-input 100 \
+    --max-length-target 100 \
+    --num-heads-attention 8 \
+    --vocab-size 10000 \
+    --dff 512 \
+    --num-encoder-layers 4 \
+    --d-model 128 \
+    --batch-size 64 \
+    --epochs 10 \
+    --dropout-rate 0.2 \
+    --path-train "/path/to/training/data" \
+    --path-valid "/path/to/validation/data" \
+    --path-test "/path/to/testing/data" \
+    --path-token-en "/path/to/tokenized/english/data" \
+    --path-token-vi "/path/to/tokenized/vietnamese/data" \
+    --checkpoint-path "/path/to/save/checkpoints"
 
 ```
 
@@ -89,15 +119,14 @@ python train.py --max-length-input ${max-length-input} --max-length-target ${max
 ## IV. Predict Process
 
 ```bash
-ppython your_script.py --path-model ${model_checkpoint} --path-tokenizer_vie ${path_to_vietnamese_tokenizer} --path-tokenizer_en ${path_to_english_tokenizer} --predict-data ${path_to_prediction_data} --max-length ${maximum_length}
+python predict.py --max-length-input ${max-length-input} --max-length-target ${max-length-target} --num-heads-attention ${num-heads-attention} --vocab-size ${vocab-size} --dff ${dff} --num-encoder-layers ${num-encoder-layers} --d-model ${d-model} --batch-size ${batch-size} --epochs ${epochs} --dropout-rate ${dropout-rate} --model-path ${model_checkpoint} --path-token-vi ${path_to_vietnamese_tokenizer} --path-token-en ${path_to_english_tokenizer} --predict-path ${path_to_prediction_data}
 ```
 
 ### Arguments :
-  - `path-model`: Path to the saved model.
-  - `path-tokenizer_vie`: Path to the tokenizer for Vietnamese. Required.
-  - `path-tokenizer_en`: Path to the tokenizer for English. Required.
-  - `predict-data`: Path to the data for prediction. Required.
-  - `max-length`: Maximum length of prediction strings (default is 200).
+  - `model-path`: Path to the saved model.
+  - `path-token_vie`: Path to the tokenizer for Vietnamese. Required.
+  - `path-token_en`: Path to the tokenizer for English. Required.
+  - `predict-path`: Path to the data for prediction. Required.
 
 ## V. Result and Comparision
 
