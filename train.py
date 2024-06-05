@@ -54,7 +54,7 @@ if __name__ == '__main__':
     if user_input != 'y':
 
         dataset = data.Data_Preprocessing(
-            args.path_train, args.path_valid, args.path_test, vocab_size=args.vocab_size, type_data='arrow')
+            args.path_train, args.path_valid, args.path_test, vocab_size=args.vocab_size, type_data=r'arrow')
 
         print('Data processing ......')
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         path_save_test = r'Arrow_file\test.arrow'
 
         dataset = data.Data_Preprocessing(
-            args.path_train, args.path_valid, args.path_test, vocab_size=args.vocab_size, type_data='csv')
+            args.path_train, args.path_valid, args.path_test, vocab_size=args.vocab_size, type_data=r'csv')
         max_input_length = args.max_length_input
         max_target_length = args.max_length_target
 
@@ -98,10 +98,12 @@ if __name__ == '__main__':
         learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)  # , clipvalue=0.5
 
     trainer = trainer.Trainer(
-        model=transformer_model, optimizer=optimizer, epochs=args.epochs, model_path=args.model_path, start_token=target_tokenizer.get_vocab()[
+        model=transformer_model, optimizer=optimizer, epochs=args.epochs, model_path=args.checkpoint_path, start_token=target_tokenizer.get_vocab()[
             '<s>'], end_token=target_tokenizer.get_vocab()['</s>'], tokenizer_en=input_tokenizer, tokenizer_vi=target_tokenizer)
 
     trainer.fit(train_dataset, val_dataset, test_dataset)
+    # print('Bleu score is', trainer.bleu_score(
+    #     train_dataset, num_compute=r'batch'))
 
     print('----------------------------------------')
     print('Training model successfully !')

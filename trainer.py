@@ -31,7 +31,7 @@ class Trainer:
         bleu = sacrebleu.corpus_bleu(hypotheses, [references])
         return bleu.score
 
-    def bleu_score(self, test_data):
+    def bleu_score(self, test_data, num_compute='all'):
         references = []
         hypotheses = []
         for batch in test_data:
@@ -45,6 +45,11 @@ class Trainer:
                 # Convert to string and wrap in list
                 references.append(ref)
                 hypotheses.append(hyp)
+
+            if num_compute != 'all':
+                print('Number of test to compute BLEU score:', len(references))
+                break
+
         bleu_score = self.compute_bleu(references, hypotheses)
         return bleu_score
 
@@ -68,9 +73,9 @@ class Trainer:
         for epoch in range(self.epochs):
             print(f'Epoch {epoch + 1}/{self.epochs}')
             self.model.fit(train_data, validation_data=val_data, epochs=1)
+            self.model.save_weights(self.model_path)
+            print('Saved checkpoint !')
 
-        print('Saving checkpoint ......')
-        self.model.save_weights(self.model_path)
         print('Saved checkpoint at {}'.format(self.model_path))
         print('----------------Done--------------------')
 
@@ -107,7 +112,7 @@ class Trainer:
                            loss=self.loss_function, metrics=[self.cal_acc])
         self.model.load_weights(self.model_path)
         print('-----------------------------------------')
-        print('Predicting ......')
+        print('Translating ......')
 
         results = []
 

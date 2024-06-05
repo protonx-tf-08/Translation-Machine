@@ -229,8 +229,11 @@ class Data_Predict:
             with open(data_path, 'r') as file:
                 # Đọc từng dòng của file và lưu vào mảng
                 for line in file:
+                    if line == '':
+                        continue
                     # Thêm dòng vào mảng sau khi loại bỏ các ký tự trắng thừa
                     lines_predict.append(line)
+
         return lines_predict
 
     def preprocess_sentence(self, sentence):
@@ -254,4 +257,4 @@ class Data_Predict:
         input_en = tf.keras.preprocessing.sequence.pad_sequences(
             input_en, padding='post', maxlen=max_length, truncating='post')
         input_tensor = tf.convert_to_tensor(input_en, dtype=tf.int64)
-        return input_tensor
+        return self.data, input_tensor

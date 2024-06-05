@@ -60,14 +60,14 @@ There are some important arguments for the script you should consider when runni
 ### Model config : 
 To configure the model, you can adjust the following parameters:
 
-- `max-length-input`: Maximum length of input sequences. Default is 200.
-- `max-length-target`: Maximum length of target sequences. Default is 200.
-- `embedding-dim`: Dimensionality of the token embeddings. Default is 32.
-- `num-heads-attention`: Number of attention heads in the multi-head attention layers. Default is 2. It is in [3.2.2](https://arxiv.org/pdf/1706.03762.pdf) of the paper
+- `max-length-input`: Maximum length of input sequences. Default is 64.
+- `max-length-target`: Maximum length of target sequences. Default is 64.
+- `num-heads-attention`: Number of attention heads in the multi-head attention layers. Default is 8. It is in [3.2.2](https://arxiv.org/pdf/1706.03762.pdf) of the paper
+- `vocab-size`: Number of tokens. Default is 20000.
 - `dff`: Dimensionality of the feedforward network. Default is 512. It is in [3.3](https://arxiv.org/pdf/1706.03762.pdf) of the paper
-- `num-layers`: Number of layers in the Transformer model. Default is 2.
-- `d-model`: Dimensionality of the model. Default is 128. It is in [3.2.2](https://arxiv.org/pdf/1706.03762.pdf) of the paper
-- `batch-size`: Batch size for training. Default is 4.
+- `num-layers`: Number of layers in the Transformer model. Default is 6.
+- `d-model`: Dimensionality of the model. Default is 512. It is in [3.2.2](https://arxiv.org/pdf/1706.03762.pdf) of the paper
+- `batch-size`: Batch size for training. Default is 64.
 - `epochs`: Number of epochs for training. Default is 10.
 - `dropout-rate`: Dropout rate for regularization. Default is 0.1.
 - `path-token-en`: Path to English tokenizer.
@@ -130,30 +130,21 @@ python predict.py --max-length-input ${max-length-input} --max-length-target ${m
 
 ## V. Result and Comparision
 
-Transformer Encoder model
+Transformer Translation model
 ```
-Epoch 1/3
-782/782 [==============================] - 57s 63ms/step - loss: 0.5410 - binary_accuracy: 0.6794 - val_loss: 0.3047 - val_binary_accuracy: 0.8703
-Epoch 2/3
-782/782 [==============================] - 26s 34ms/step - loss: 0.2614 - binary_accuracy: 0.8930 - val_loss: 0.2786 - val_binary_accuracy: 0.8819
-Epoch 3/3
-782/782 [==============================] - 29s 37ms/step - loss: 0.2004 - binary_accuracy: 0.9204 - val_loss: 0.3002 - val_binary_accuracy: 0.8784
-  1/782 [..............................] - ETA: 23s - loss: 0.2095 - binary_accuracy: 0.9062
-```
-
-**FIXME**
-
-Other architecture
-
-```
-Epoch 6/10
-391/391 [==============================] - 115s 292ms/step - loss: 0.1999 - acc: 0.9277 - val_loss: 0.4719 - val_acc: 0.8130
-Epoch 7/10
-391/391 [==============================] - 114s 291ms/step - loss: 0.1526 - acc: 0.9494 - val_loss: 0.5224 - val_acc: 0.8318
-Epoch 8/10
-391/391 [==============================] - 115s 293ms/step - loss: 0.1441 - acc: 0.9513 - val_loss: 0.5811 - val_acc: 0.7875
+Epoch 13/20
+2084/2084 [==============================] - 676s 324ms/step - loss: 2.8375 - cal_acc: 0.4339 - val_loss: 3.3632 - val_cal_acc: 0.3873
+Epoch 14/20
+2084/2084 [==============================] - 679s 326ms/step - loss: 2.7991 - cal_acc: 0.4388 - val_loss: 3.3482 - val_cal_acc: 0.3889
+Epoch 15/20
+2084/2084 [==============================] - 678s 325ms/step - loss: 2.7628 - cal_acc: 0.4440 - val_loss: 3.3595 - val_cal_acc: 0.3880
 ```
 
+In test data, we compute bleu score to evaluate this model and the result is :
+```
+Number of test to compute BLEU score: 64
+Bleu score is 6.246422342661019
+```
 
 The model's performance improves significantly over three epochs, with loss decreasing and accuracy increasing. 
 
