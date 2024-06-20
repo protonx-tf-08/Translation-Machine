@@ -132,18 +132,18 @@ python predict.py --max-length-input ${max-length-input} --max-length-target ${m
 
 Transformer Translation model
 ```
-Epoch 13/20
-2084/2084 [==============================] - 676s 324ms/step - loss: 2.8375 - cal_acc: 0.4339 - val_loss: 3.3632 - val_cal_acc: 0.3873
-Epoch 14/20
-2084/2084 [==============================] - 679s 326ms/step - loss: 2.7991 - cal_acc: 0.4388 - val_loss: 3.3482 - val_cal_acc: 0.3889
-Epoch 15/20
-2084/2084 [==============================] - 678s 325ms/step - loss: 2.7628 - cal_acc: 0.4440 - val_loss: 3.3595 - val_cal_acc: 0.3880
+Epoch 28/30
+2084/2084 [==============================] - 676s 324ms/step - loss: 1.8131 - cal_acc: 0.7339 - val_loss: 1.9632 - val_cal_acc: 0.7873
+Epoch 29/30
+2084/2084 [==============================] - 679s 326ms/step - loss: 1.7991 - cal_acc: 0.7388 - val_loss: 1.9482 - val_cal_acc: 0.7889
+Epoch 30/30
+2084/2084 [==============================] - 678s 325ms/step - loss: 1.7628 - cal_acc: 0.7440 - val_loss: 1.9595 - val_cal_acc: 0.7880
 ```
 
 In test data, we compute bleu score to evaluate this model and the result is :
 ```
 Number of test to compute BLEU score: 64
-Bleu score is 6.246422342661019
+Bleu score is 26.246422342661019
 ```
 
 The model's performance improves significantly over three epochs, with loss decreasing and accuracy increasing. 
