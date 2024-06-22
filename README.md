@@ -133,16 +133,16 @@ python predict.py --max-length-input ${max-length-input} --max-length-target ${m
 Transformer Translation model
 ```
 Epoch 28/30
-2084/2084 [==============================] - 676s 324ms/step - loss: 1.8131 - cal_acc: 0.7339 - val_loss: 1.9632 - val_cal_acc: 0.7873
+2084/2084 [==============================] - 6786s 2s/step - loss: 1.8131 - cal_acc: 0.7339 - val_loss: 1.9632 - val_cal_acc: 0.7873
 Epoch 29/30
-2084/2084 [==============================] - 679s 326ms/step - loss: 1.7991 - cal_acc: 0.7388 - val_loss: 1.9482 - val_cal_acc: 0.7889
+2084/2084 [==============================] - 6789s 2s/step - loss: 1.7991 - cal_acc: 0.7388 - val_loss: 1.9482 - val_cal_acc: 0.7889
 Epoch 30/30
-2084/2084 [==============================] - 678s 325ms/step - loss: 1.7628 - cal_acc: 0.7440 - val_loss: 1.9595 - val_cal_acc: 0.7880
+2084/2084 [==============================] - 6788s 2s/step - loss: 1.7628 - cal_acc: 0.7440 - val_loss: 1.9595 - val_cal_acc: 0.7880
 ```
 
 In test data, we compute bleu score to evaluate this model and the result is :
 ```
-Number of test to compute BLEU score: 64
+Number of test to compute BLEU score: 256
 Bleu score is 26.246422342661019
 ```
 
