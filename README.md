@@ -16,7 +16,7 @@ library is part of our project: Building an Translation Machine Model library wi
     <img src='https://storage.googleapis.com/protonx-cloud-storage/transformer/protonx-transf.png' width=200 class="center">
 </p>
 
-This project is a Vietnamese - English translation machine using a Transformer model. It aims to provide accurate translations, bridging language barriers and meeting the demand for efficient translation tools.
+This project is a Vietnamese - English translation machine using a Transformer model coding from scratch to make it easier in the testing and editing process. It aims to provide accurate translations, bridging language barriers and meeting the demand for efficient translation tools.
 
 ## Architecture Image 
 
